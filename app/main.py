@@ -37,8 +37,7 @@ app.include_router(api_router, prefix="/api")
 @app.get("/")
 async def root(request: Request):
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request
-        }
+        request=request, 
+        name="index.html", 
+        context={"request": request, "data_lain": ...} # <- Biarkan isi data context Anda sama seperti sebelumnya
     )

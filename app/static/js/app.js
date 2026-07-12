@@ -643,6 +643,7 @@ async function renderDevices() {
         <div class="text-sm text-muted mt-2">Deteksi otomatis perangkat di jaringan lokal</div>
       </div>
       <div class="flex gap-2">
+        <button class="btn btn-info" onclick="showTutorialESP32()" style="background:var(--accent);color:#fff">📖 Tutorial ESP32</button>
         <button class="btn btn-secondary" onclick="scanDevices()" id="scan-btn">🔍 Scan Jaringan</button>
         <button class="btn btn-primary" onclick="showRegisterDevice()">+ Daftarkan</button>
       </div>
@@ -819,6 +820,257 @@ async function sendSensorData() {
     el.textContent = r?.data?.detail || 'Gagal mengirim data.';
     el.classList.remove('hidden');
     toast('Validasi gagal: ' + (r?.data?.detail || 'error'), 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FUNGSI POPUP TUTORIAL ESP32 (DENGAN TAB MENU)
+   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   FUNGSI POPUP TUTORIAL ESP32 (VERSI FINAL - LEBAR MAKSIMAL)
+   ═══════════════════════════════════════════════════════════ */
+function showTutorialESP32() {
+  const codeSnippet = `
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <DHT.h>
+
+// ==========================================
+// 1. PENGATURAN WIFI & SERVER
+// ==========================================
+const char* WIFI_SSID     = "NAMA_WIFI_ANDA";
+const char* WIFI_PASSWORD = "PASSWORD_WIFI";
+
+// Ganti IP_ADDRESS dengan IPv4 Device (laptop/pc) Anda (contoh: 192.168.1.10)
+// Jangan gunakan "127.0.0.1" atau "localhost" karena ESP32 punya jaringannya sendiri!
+const char* SERVER_URL    = "http://IP_SERVER_ANDA:8000/api/iot/data"; 
+
+// Masukkan Token dari menu Dashboard/Device di Web Anda
+const char* DEVICE_TOKEN  = "PASTE_TOKEN_DISINI"; 
+
+// ==========================================
+// 2. PENGATURAN PIN SENSOR
+// ==========================================
+#define DHTPIN 4          // Pin data DHT22 terhubung ke GPIO 4
+#define DHTTYPE DHT11    // Jenis DHT (ganti nomer DHT sesuaikan dengan jenis DHT yang digunakan)
+DHT dht(DHTPIN, DHTTYPE);
+
+#define MQ4_PIN 35        // Pin analog MQ-4 terhubung ke GPIO 35 (Analog)
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+  
+  // Koneksi ke WiFi
+  Serial.println();
+  Serial.print("Menghubungkan ke Wi-Fi: ");
+  Serial.println(WIFI_SSID);
+  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  
+  Serial.println("");
+  Serial.println("Wi-Fi Terhubung!");
+  Serial.print("IP Address ESP32: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  // 1. Baca Data Sensor
+  float temperature = dht.readTemperature();
+  float humidity    = dht.readHumidity();
+  
+  // Baca gas MQ-4 (Konversi analog sederhana ke PPM tiruan untuk contoh)
+  // Untuk kalibrasi MQ-4 yang presisi, Anda bisa menyesuaikan rumusnya nanti
+  int analogGas = analogRead(MQ4_PIN); 
+  float gasPPM = map(analogGas, 0, 4095, 0, 1000); 
+
+  // Cek apakah sensor DHT berhasil dibaca
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Gagal membaca dari sensor DHT!");
+    delay(2000);
+    return;
+  }
+
+  Serial.println("----------------------------------");
+  Serial.printf("Suhu: %.1f °C | Kelembapan: %.1f %% | Gas: %.0f PPM\n", temperature, humidity, gasPPM);
+
+  // 2. Kirim Data ke Server Jika WiFi Terhubung
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+    
+    // Mulai koneksi HTTP
+    http.begin(client, SERVER_URL);
+    http.addHeader("Content-Type", "application/json");
+
+    // 3. Susun Data JSON secara Manual (Tidak perlu library tambahan)
+    String jsonPayload = "{";
+    jsonPayload += "\"device_token\":\"" + String(DEVICE_TOKEN) + "\",";
+    jsonPayload += "\"temperature\":" + String(temperature) + ",";
+    jsonPayload += "\"humidity\":" + String(humidity) + ",";
+    jsonPayload += "\"gas\":" + String(gasPPM);
+    jsonPayload += "}";
+
+    Serial.println("Mengirim payload: " + jsonPayload);
+
+    // 4. Lakukan POST Request
+    int httpResponseCode = http.POST(jsonPayload);
+
+    // 5. Cek Hasilnya
+    if (httpResponseCode > 0) {
+      Serial.printf("HTTP Response Code: %d\n", httpResponseCode);
+      String responseStr = http.getString();
+      Serial.println("Response Server: " + responseStr);
+    } else {
+      Serial.printf("Error request HTTP: %s\n", http.errorToString(httpResponseCode).c_str());
+    }
+    
+    // Tutup koneksi
+    http.end();
+  } else {
+    Serial.println("Wi-Fi Terputus!");
+  }
+
+  // Jeda pengiriman data (Misal: 10 detik sekali untuk percobaan)
+  // Saat proyek asli berjalan, Anda bisa ubah ke 5 menit sekali (300000 ms)
+  delay(10000); 
+}
+`.trim();
+
+  const customStyles = `
+    <style>
+      .tab-container { border-bottom: 1px solid var(--border); margin-bottom: 20px; display: flex; gap: 10px; overflow-x: auto; }
+      .tab-btn {
+        background: transparent; border: none; color: var(--text3); padding: 10px 16px;
+        cursor: pointer; font-weight: bold; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap;
+      }
+      .tab-btn:hover { color: var(--text1); }
+      .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+      .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+      .tab-content.active { display: block; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+  `;
+
+  const modalBody = `
+    ${customStyles}
+    
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-langkah')">📝 Langkah Pemasangan</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-rangkaian')">🔌 Rangkaian IoT</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-kode')">💻 Kode ESP32</button>
+    </div>
+
+    <!-- KONTEN 1: Langkah Pemasangan -->
+    <div id="tab-langkah" class="tab-content active">
+      <div class="text-sm mb-2 font-bold" style="color:var(--text1)">Panduan Setup Alat:</div>
+      <ol class="text-sm pl-4 mb-3" style="list-style:decimal; color:var(--text2); line-height: 1.8;">
+        <li>Klik tombol <b>+ Daftarkan</b> di dashboard utama untuk membuat identitas alat baru.</li>
+        <li>Setelah perangkat muncul di daftar, salin <code style="color:var(--accent)">Token</code> yang tertera pada kartu alat.</li>
+        <li>Rakit komponen sensor sesuai panduan di menu <b>Rangkaian IoT</b>.</li>
+        <li>Salin kode C++ dari menu <b>Kode ESP32</b> lalu tempel ke aplikasi Arduino IDE Anda.</li>
+        <li>Ubah bagian <code style="color:var(--accent)">NAMA_WIFI</code>, <code style="color:var(--accent)">PASSWORD_WIFI</code>, alamat <code style="color:var(--accent)">IP_SERVER</code>, dan masukkan Token yang sudah Anda salin.</li>
+        <li>Upload (Flash) kode tersebut ke mikrokontroler ESP32 Anda.</li>
+        <li>Buka Serial Monitor di Arduino IDE untuk melihat status pengiriman data pertama!</li>
+      </ol>
+    </div>
+
+    <!-- KONTEN 2: Foto Rangkaian -->
+    <div id="tab-rangkaian" class="tab-content">
+      <div class="text-sm mb-2 font-bold" style="color:var(--text1)">Skema Pemasangan Kabel (Wiring Diagram):</div>
+      <div style="background:var(--bg3); padding:16px; border-radius:8px; border:1px dashed var(--border); text-align:center;">
+        <img src="/static/images/skema-iot.png" alt="Skema Rangkaian" style="max-width:100%; border-radius:6px; margin-bottom:12px;">
+      </div>
+      <div class="text-xs mt-3 text-muted" style="line-height:1.6; padding:12px; background:rgba(0,0,0,0.2); border-radius:6px;">
+        <b>Panduan Pin Cepat ESP32:</b><br>
+        • <b>Sensor DHT22:</b> Pin VCC ke 3V3, GND ke GND, dan Data (OUT) ke Pin D4.<br>
+        • <b>Sensor MQ-4:</b> Pin VCC ke 5V (VIN), GND ke GND, dan Analog (A0) ke Pin D35.<br>
+        • Pastikan jalur <i>Ground</i> (GND) seluruh komponen saling terhubung dalam satu jalur.
+      </div>
+    </div>
+
+    <!-- KONTEN 3: Kode Program -->
+    <div id="tab-kode" class="tab-content">
+      <div class="flex justify-between items-center mb-2">
+        <label class="form-label mb-0 text-sm font-bold" style="color:var(--text1)">Template Arduino IDE</label>
+        <button class="btn btn-sm btn-secondary" onclick="copyTutorialCode()" style="font-size:11px; padding:4px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--text1); cursor:pointer; border-radius:4px;">📋 Salin Kode</button>
+      </div>
+      <textarea id="esp32-tutorial-code" class="form-input text-mono text-xs" style="width:100%; height:320px; white-space:pre; resize:vertical; background:var(--bg3); color:var(--text2); padding:16px; border:1px solid var(--border); border-radius:6px;" readonly>${codeSnippet}</textarea>
+    </div>
+  `;
+
+  // [PERBAIKAN 1]: Parameter ke-4 dikosongkan agar tombol Tutup tidak dobel
+  openModal(
+    'Tutorial Integrasi ESP32',
+    'Panduan lengkap menghubungkan perangkat keras IoT',
+    modalBody,
+    '' 
+  );
+
+  // ═══════════════════════════════════════════════════════════
+  // [PERBAIKAN 2]: Pencari Jejak Super Agresif
+  // ═══════════════════════════════════════════════════════════
+  setTimeout(() => {
+    const myTab = document.getElementById('tab-langkah');
+    if (myTab) {
+      let currentElement = myTab.parentElement;
+      
+      while (currentElement && currentElement.tagName !== 'BODY') {
+        if (
+          currentElement.tagName === 'DIALOG' || 
+          currentElement.className.includes('modal') || 
+          currentElement.className.includes('card') ||
+          currentElement.style.maxWidth
+        ) {
+          // Paksa lebar
+          currentElement.style.setProperty('max-width', '800px', 'important');
+          currentElement.style.setProperty('width', '90vw', 'important');
+          
+          // Paksa ketengah (Kunci perbaikannya ada di 3 baris ini!)
+          currentElement.style.setProperty('margin', 'auto', 'important');
+          currentElement.style.setProperty('left', '0', 'important');
+          currentElement.style.setProperty('right', '0', 'important');
+          
+          currentElement.style.setProperty('transition', 'width 0.3s ease-out, max-width 0.3s ease-out', 'important');
+        }
+        currentElement = currentElement.parentElement;
+      }
+    }
+  }, 100);
+}
+
+// Fungsi pembantu untuk mengendalikan perpindahan Tab
+function switchTab(event, tabId) {
+  // 1. Matikan semua garis aktif di tombol
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(btn => btn.classList.remove('active'));
+
+  // 2. Sembunyikan semua konten
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(content => content.classList.remove('active'));
+
+  // 3. Nyalakan tombol yang diklik dan tampilkan kontennya
+  event.currentTarget.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// Fungsi pembantu untuk menyalin kode ke clipboard
+function copyTutorialCode() {
+  const codeArea = document.getElementById('esp32-tutorial-code');
+  if (codeArea) {
+    codeArea.select();
+    codeArea.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(codeArea.value).then(() => {
+      toast('Kode berhasil disalin!', 'success');
+    }).catch(err => {
+      document.execCommand('copy');
+      toast('Kode berhasil disalin!', 'success');
+    });
   }
 }
 

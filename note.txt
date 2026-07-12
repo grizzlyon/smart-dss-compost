@@ -1,4 +1,4 @@
-saya ingin ada tambahan popup tutorial pemasangan device iot ke sistem
+saya ingin ada tambahan tampilan elemen popup untuk menandakan tutorial pemasangan dan kode nya 
 
 /* ═══════════════════════════════════════════════════════════
    PAGE: DEVICES
