@@ -1,0 +1,284 @@
+<div id="landing-page" class="hidden" style="min-height: 100vh; background: var(--bg); padding-bottom: 60px;">
+    
+    <!-- Navbar -->
+    <div style="height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid var(--border); background: rgba(14,15,11,0.9); position: sticky; top: 0; backdrop-filter: blur(12px); z-index: 50;">
+      <div style="font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--accent2);">
+        Smart DSS Compost
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="goToLogin()">Login</button>
+    </div>
+
+    <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+      
+      <!-- HERO & APA INI? -->
+      <div class="landing-hero card mb-4">
+        <div class="badge badge-green mb-4">Project • Smart DSS Compost</div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:42px;font-weight:800;margin-bottom:16px">
+          Platform Cerdas untuk Monitoring dan Pengelolaan Kompos Berbasis IoT & ML
+        </h1>
+        
+        <div class="text-sm text-muted mb-6 text-mono">
+          Dian Noviana | Firrizqi Adittia | M. Ronald Noto Negoro <br>
+          D4SIKC 3A | Politeknik Negeri Indramayu
+        </div>
+        <p style="max-width:700px;margin:auto;color:var(--text2);font-size:16px;line-height:1.8">
+          Smart DSS Compost adalah platform terintegrasi yang menggabungkan perangkat Internet of Things (IoT) dan Machine Learning untuk memantau, memprediksi, dan memberikan panduan pengomposan secara otomatis dan presisi.
+        </p>
+
+        <!-- STATISTIK SISTEM -->
+        <div class="grid-4 mt-4" style="margin-top: 40px; border-top: 1px solid var(--border); padding-top: 30px;">
+            <div class="stat-card">
+              <div class="stat-value" id="stat-users">0</div>
+              <div class="stat-unit">Pengguna Terdaftar</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="stat-devices">0</div>
+              <div class="stat-unit">Perangkat IoT Aktif</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">3</div>
+              <div class="stat-unit">Fitur Utama Sistem</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="stat-exports">0</div>
+              <div class="stat-unit">Data Diekspor</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-lg" onclick="goToLogin()">
+                Mulai Sekarang →
+            </button>
+        </div>
+      </div>
+
+      <!-- PROBLEM & SOLUTION -->
+      <div class="grid-2 mb-4">
+        <div class="card">
+            <h2 style="font-family:'Syne',sans-serif;font-size:24px;margin-bottom:16px;color:var(--text);">Masalah Saat Ini</h2>
+            <p style="color:var(--text2);line-height:1.7;">
+                Penumpukan sampah organik adalah krisis yang sering diabaikan. Kurangnya pemahaman tentang cara mengolah limbah dapur dan kebiasaan membuang sampah sembarangan menyebabkan pencemaran lingkungan, bau tidak sedap, dan peningkatan emisi gas metana yang merusak ozon.
+            </p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent2);">
+            <h2 style="font-family:'Syne',sans-serif;font-size:24px;margin-bottom:16px;color:var(--text);">Solusi Kami</h2>
+            <p style="color:var(--text2);line-height:1.7;">
+                Kami mengotomatisasi pengomposan. Dengan memantau kondisi sampah secara <i>real-time</i> dan memberikan instruksi cerdas, sistem ini mengubah proses daur ulang menjadi sangat mudah. Skala penerapan mulai dari tempat sampah pintar di dapur rumah tangga hingga fasilitas komposter komunal skala pemerintah.
+            </p>
+        </div>
+      </div>
+
+      <!-- FITUR SISTEM -->
+      <h2 class="section-title text-center" style="margin: 60px 0 20px;">Fitur Utama</h2>
+      <div class="grid-3 mb-4">
+        <div class="blog-card">
+          <div style="font-size:40px;margin-bottom:12px;">📡</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:18px;">Monitoring IoT</h3>
+          <p class="text-sm text-muted">Pemantauan suhu, kelembapan, dan gas metana secara <i>real-time</i> 24/7 menggunakan sensor ESP32.</p>
+        </div>
+        <div class="blog-card">
+          <div style="font-size:40px;margin-bottom:12px;">🤖</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:18px;">Machine Learning</h3>
+          <p class="text-sm text-muted">Klasifikasi cerdas fase pengomposan (Mentah, Matang, atau Gagal) menggunakan algoritma <i>Random Forest</i>.</p>
+        </div>
+        <div class="blog-card">
+          <div style="font-size:40px;margin-bottom:12px;">📋</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:18px;">DSS Recommendation</h3>
+          <p class="text-sm text-muted">Sistem otomatis memberikan instruksi tindakan (seperti: "Aduk kompos" atau "Tambah air") berdasarkan analisis data.</p>
+        </div>
+      </div>
+
+      <!-- CARA KERJA -->
+      <div class="card mb-4" style="padding: 40px;">
+        <h2 class="section-title text-center" style="margin-bottom: 30px;">Cara Penggunaan</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; text-align:center;">
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:32px; margin-bottom:8px;">📝</div>
+                <div style="font-weight:600; color:var(--text);">1. Daftar</div>
+            </div>
+            <div style="color:var(--text3);">➔</div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:32px; margin-bottom:8px;">🔌</div>
+                <div style="font-weight:600; color:var(--text);">2. Tambah Device</div>
+            </div>
+            <div style="color:var(--text3);">➔</div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:32px; margin-bottom:8px;">📈</div>
+                <div style="font-weight:600; color:var(--text);">3. Monitoring</div>
+            </div>
+            <div style="color:var(--text3);">➔</div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:32px; margin-bottom:8px;">💡</div>
+                <div style="font-weight:600; color:var(--text);">4. Rekomendasi</div>
+            </div>
+            <div style="color:var(--text3);">➔</div>
+            <div style="flex:1; min-width:120px;">
+                <div style="font-size:32px; margin-bottom:8px;">🌱</div>
+                <div style="font-weight:600; color:var(--text);">5. Panen Kompos</div>
+            </div>
+        </div>
+      </div>
+
+      <!-- MANFAAT -->
+      <h2 class="section-title text-center" style="margin: 60px 0 20px;">Manfaat Sistem</h2>
+      <div class="card mb-4 table-wrap">
+          <table>
+              <thead>
+                  <tr>
+                      <th style="width:30%">Kategori Pengguna</th>
+                      <th>Manfaat Utama & Dampak</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td style="font-weight:bold; color:var(--text);">🏠 Rumah Tangga</td>
+                      <td style="color:var(--text2);">Mengurangi produksi limbah dapur harian dan menjaga lingkungan sekitar tetap bersih.</td>
+                  </tr>
+                  <tr>
+                      <td style="font-weight:bold; color:var(--text);">🌾 Petani / Pekebun</td>
+                      <td style="color:var(--text2);">Mendapatkan pasokan pupuk organik berkualitas tinggi yang terjamin fase kematangannya secara presisi.</td>
+                  </tr>
+                  <tr>
+                      <td style="font-weight:bold; color:var(--text);">🏫 Instansi Sekolah</td>
+                      <td style="color:var(--text2);">Menjadi media pembelajaran praktis terkait ilmu lingkungan, biologi, dan teknologi IoT bagi siswa.</td>
+                  </tr>
+                  <tr>
+                      <td style="font-weight:bold; color:var(--text);">💼 UMKM & Bisnis</td>
+                      <td style="color:var(--text2);">Membuka peluang usaha produksi dan penjualan kompos komersial dengan standar pengolahan yang konsisten.</td>
+                  </tr>
+                  <tr>
+                      <td style="font-weight:bold; color:var(--text);">♻️ Bank Sampah</td>
+                      <td style="color:var(--text2);">Mempermudah manajemen dan pengawasan banyak tabung komposter sekaligus dalam satu dasbor pusat.</td>
+                  </tr>
+                  <tr>
+                      <td style="font-weight:bold; color:var(--text);">🏛️ Pemerintah</td>
+                      <td style="color:var(--text2);">Mendukung program pengurangan volume sampah di Tempat Pembuangan Akhir (TPA) skala kota.</td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+      <!-- KEAMANAN & FAQ -->
+      <div class="grid-2 mb-4">
+          <!-- Keamanan -->
+          <div class="card">
+              <h2 style="font-family:'Syne',sans-serif;font-size:24px;margin-bottom:16px;color:var(--text);">Keamanan Data</h2>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                  <div style="background:var(--bg2); padding:12px; border-radius:var(--r); border:1px solid var(--border); display:flex; align-items:center; gap:12px;">
+                      <span>🔒</span> <span style="color:var(--text2); font-size:14px;">Akun pengguna dilindungi dengan autentikasi berstandar industri.</span>
+                  </div>
+                  <div style="background:var(--bg2); padding:12px; border-radius:var(--r); border:1px solid var(--border); display:flex; align-items:center; gap:12px;">
+                      <span>🔑</span> <span style="color:var(--text2); font-size:14px;">Data riwayat sensor dan prediksi dipisahkan berdasarkan otorisasi pemilik.</span>
+                  </div>
+                  <div style="background:var(--bg2); padding:12px; border-radius:var(--r); border:1px solid var(--border); display:flex; align-items:center; gap:12px;">
+                      <span>☁️</span> <span style="color:var(--text2); font-size:14px;">Pencadangan (Backup) data dilakukan secara rutin di server Cloud.</span>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- FAQ -->
+          <div class="card">
+              <h2 style="font-family:'Syne',sans-serif;font-size:24px;margin-bottom:16px;color:var(--text);">Tanya Jawab (FAQ)</h2>
+              <div style="max-height: 250px; overflow-y: auto; padding-right:10px;">
+                  <div style="margin-bottom: 12px; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                      <div style="font-weight:bold; color:var(--text); font-size:14px;">Apakah harus memakai IoT?</div>
+                      <div style="color:var(--text3); font-size:13px; margin-top:4px;">Disarankan, agar data akurat. Namun Anda tetap bisa menginput data suhu & kelembapan secara manual di sistem.</div>
+                  </div>
+                  <div style="margin-bottom: 12px; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                      <div style="font-weight:bold; color:var(--text); font-size:14px;">Apakah cocok untuk rumah tangga?</div>
+                      <div style="color:var(--text3); font-size:13px; margin-top:4px;">Sangat cocok. Alat IoT dirancang ringkas sehingga bisa dipasang pada wadah komposter kecil di halaman rumah.</div>
+                  </div>
+                  <div style="margin-bottom: 12px; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                      <div style="font-weight:bold; color:var(--text); font-size:14px;">Bisakah digunakan tanpa internet?</div>
+                      <div style="color:var(--text3); font-size:13px; margin-top:4px;">Tidak. Perangkat keras memerlukan koneksi Wi-Fi untuk mengirim pembaruan data secara <i>real-time</i> ke <i>database</i> awan.</div>
+                  </div>
+                  <div style="margin-bottom: 12px;">
+                      <div style="font-weight:bold; color:var(--text); font-size:14px;">Bagaimana jika sensor rusak?</div>
+                      <div style="color:var(--text3); font-size:13px; margin-top:4px;">Dasbor akan mendeteksi tidak adanya aliran data dan menandai status perangkat menjadi <i>Offline</i>. Data lama akan tetap tersimpan aman.</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- KONTAK & FORM KOMENTAR -->
+      <div class="grid-2 mb-4" style="max-width: 1000px; margin: 60px auto; gap: 24px;">
+          
+          <!-- Bagian Kiri: Informasi Kontak -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+              <h2 style="font-family:'Syne',sans-serif;font-size:24px;color:var(--text);margin-bottom:8px;">Hubungi Kami</h2>
+              <p class="text-sm text-muted mb-4" style="line-height: 1.6;">
+                  Punya pertanyaan lebih lanjut, butuh bantuan instalasi alat, atau ingin berkolaborasi? Jangan ragu untuk menghubungi tim pengembang kami.
+              </p>
+              
+              <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 16px;">
+                  <div style="display: flex; align-items: flex-start; gap: 16px;">
+                      <div style="font-size: 28px; color: var(--accent2);">📍</div>
+                      <div>
+                          <div style="font-weight: 700; color: var(--text); margin-bottom: 4px;">Lokasi Riset</div>
+                          <div class="text-sm text-muted" style="line-height: 1.5;">Kampus Politeknik Negeri Indramayu (Polindra)<br>Jl. Raya Lohbener Lama No.8, Kabupaten Indramayu</div>
+                      </div>
+                  </div>
+                  
+                  <div style="display: flex; align-items: flex-start; gap: 16px;">
+                      <div style="font-size: 28px; color: var(--accent2);">✉️</div>
+                      <div>
+                          <div style="font-weight: 700; color: var(--text); margin-bottom: 4px;">Email Dukungan</div>
+                          <div class="text-sm text-muted">support@smartcompost.local</div>
+                      </div>
+                  </div>
+
+                  <div style="display: flex; align-items: flex-start; gap: 16px;">
+                      <div style="font-size: 28px; color: var(--accent2);">👥</div>
+                      <div>
+                          <div style="font-weight: 700; color: var(--text); margin-bottom: 4px;">Tim Pengembang</div>
+                          <div class="text-sm text-muted">D4SIKC 3A - Kelompok 3</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Bagian Kanan: Form Komentar -->
+          <div class="card">
+              <div class="mb-4">
+                  <h2 style="font-family:'Syne',sans-serif;font-size:24px;color:var(--text);margin-bottom:8px;">Bantu Kami Berkembang</h2>
+                  <p class="text-sm text-muted">Berikan saran, kritik, atau laporkan kendala yang Anda alami saat menggunakan sistem.</p>
+              </div>
+              
+              <div class="form-group">
+                  <label class="form-label">Nama (Opsional)</label>
+                  <input type="text" id="fb-name" class="form-input" placeholder="Masukkan nama Anda">
+              </div>
+              <div class="form-group">
+                  <label class="form-label">Email (Opsional)</label>
+                  <input type="email" id="fb-email" class="form-input" placeholder="Masukkan email Anda">
+              </div>
+              <div class="form-group">
+                  <label class="form-label">Kategori Masukan</label>
+                  <select id="fb-category" class="form-input">
+                      <option value="Saran">Saran Peningkatan</option>
+                      <option value="Bug">Laporan Bug / Error</option>
+                      <option value="Fitur">Permintaan Fitur Baru</option>
+                      <option value="Pengalaman">Pengalaman Menggunakan</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label class="form-label">Pesan</label>
+                  <textarea id="fb-message" class="form-input" rows="4" placeholder="Tuliskan detail masukan Anda di sini..."></textarea>
+              </div>
+              <button class="btn btn-primary w-full" onclick="submitFeedback()">Kirim Masukan</button>
+          </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div style="text-align:center; padding:40px 20px; border-top:1px solid var(--border); color:var(--text3);">
+        Smart DSS Compost © 2026<br>
+        Proyek Sistem Pendukung Keputusan Berbasis IoT & Machine Learning
+        <div class="text-sm text-muted mb-6 text-mono mt-2" style="line-height: 1.6;">
+          Dian Noviana (2307009) | Firrizqi Adittia (2307013) | M. Ronald Noto Negoro (2307019) <br>
+          D4SIKC 3A | Sistem Informasi Kota Cerdas | Politeknik Negeri Indramayu
+        </div>
+      </div>  
+      
+    </div>
+</div>

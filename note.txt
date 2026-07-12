@@ -1,0 +1,238 @@
+saya ingin ada tambahan popup tutorial pemasangan device iot ke sistem
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE: DEVICES
+   ═══════════════════════════════════════════════════════════ */
+async function renderDevices() {
+  setContent(`<div style="text-align:center;padding:40px;color:var(--text3)">Memuat perangkat...</div>`);
+  const r = await GET('/devices/');
+  const devices = r?.data || [];
+
+  let deviceListHtml = '';
+  if (devices.length === 0) {
+    deviceListHtml = `
+      <div class="card" style="text-align:center;padding:40px;color:var(--text3)">
+        📟 Belum ada perangkat terdaftar.<br>
+        <span class="text-sm">Scan jaringan atau daftarkan perangkat secara manual.</span>
+      </div>
+    `;
+  } else {
+    deviceListHtml = `
+      <div class="device-grid">
+        ${devices.map(d => {
+          const lastSeen = d.last_seen ? new Date(d.last_seen) : null;
+          const minsAgo = lastSeen ? Math.floor((Date.now() - lastSeen.getTime()) / 60000) : null;
+          const online = minsAgo !== null && minsAgo < 5;
+          return `
+            <div class="device-card ${online ? 'online' : 'offline'}">
+              <div class="flex justify-between items-center mb-2">
+                <div class="device-status">
+                  <div class="status-dot ${online?'online':'offline'}"></div>
+                  ${online ? 'Online' : 'Offline'}
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn btn-ghost btn-sm" onclick="pingDevice(${d.id})">Ping</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteDevice(${d.id}, '${d.name}')">Hapus</button>
+                </div>
+              </div>
+              <div class="font-bold" style="margin-bottom:4px">${d.name}</div>
+              <div class="device-ip">${d.ip_address || '-'}</div>
+              <div class="text-xs text-muted">${d.location || 'Lokasi tidak diset'}</div>
+              <!-- [PERBAIKAN] Tampilkan Device Token di sini -->
+              <div class="text-xs mt-2" style="background:var(--bg3);padding:4px 6px;border-radius:4px;user-select:all;border:1px dashed var(--border)">
+                <span class="text-muted">Token:</span> <code style="color:var(--accent)">${d.device_token}</code>
+              </div>
+              <div class="text-xs text-mono text-muted mt-2">
+                ${lastSeen ? `Terakhir: ${lastSeen.toLocaleString('id-ID')}` : 'Belum ada koneksi'}
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  setContent(`
+    <div class="section-header">
+      <div>
+        <div class="section-title">Perangkat IoT</div>
+        <div class="text-sm text-muted mt-2">Deteksi otomatis perangkat di jaringan lokal</div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" onclick="scanDevices()" id="scan-btn">🔍 Scan Jaringan</button>
+        <button class="btn btn-primary" onclick="showRegisterDevice()">+ Daftarkan</button>
+      </div>
+    </div>
+
+    <div id="scan-result" class="hidden mb-4"></div>
+
+    <div class="mb-4">
+      <div class="text-xs text-muted text-mono mb-3">PERANGKAT TERDAFTAR (${devices.length})</div>
+      ${deviceListHtml}
+    </div>
+
+    <div class="card">
+      <div class="card-title mb-2">Kirim Data Sensor Manual</div>
+      <div class="card-subtitle mb-3">Simulasikan pengiriman data dari perangkat IoT</div>
+      
+      <!-- [PERBAIKAN] Tambahkan Dropdown Pilihan Alat -->
+      <div class="form-group mb-3">
+        <label class="form-label">Pilih Perangkat Pengirim</label>
+        ${devices.length > 0 
+          ? `<select id="iot-device-token" class="form-input">
+               ${devices.map(d => `<option value="${d.device_token}">${d.name}</option>`).join('')}
+             </select>`
+          : `<div class="alert alert-error text-xs">Anda harus mendaftarkan perangkat terlebih dahulu!</div>`
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Suhu (°C)</label>
+          <input id="iot-temp" type="number" step="0.1" class="form-input" placeholder="62.5" value="62.5"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kelembapan (%)</label>
+          <input id="iot-hum" type="number" step="0.1" class="form-input" placeholder="45.0" value="45.0"/>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Gas Metana (ppm)</label>
+          <input id="iot-gas" type="number" step="1" class="form-input" placeholder="380" value="380"/>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:16px">
+          <button class="btn btn-primary" onclick="sendSensorData()" id="send-btn" ${devices.length === 0 ? 'disabled' : ''}>Kirim Data</button>
+        </div>
+      </div>
+      <div id="iot-result" class="hidden mt-3"></div>
+    </div>
+  `);
+}
+
+async function scanDevices() {
+  const btn = document.getElementById('scan-btn');
+  btn.classList.add('btn-loading'); btn.disabled = true;
+  btn.textContent = 'Scanning...';
+
+  const r = await GET('/devices/scan');
+  btn.classList.remove('btn-loading'); btn.disabled = false;
+  btn.innerHTML = '🔍 Scan Jaringan';
+
+  const el = document.getElementById('scan-result');
+  if (!el) return;
+  el.classList.remove('hidden');
+
+  if (!r?.ok) {
+    el.innerHTML = `<div class="alert alert-error">Gagal scan jaringan.</div>`;
+    return;
+  }
+  const found = r.data?.found || [];
+  el.innerHTML = `
+    <div class="alert alert-info">
+      🔍 Scan selesai. Ditemukan <b>${found.length}</b> port aktif dari ${r.data?.scanned} host yang diperiksa.
+      ${found.length > 0 ? `<div class="mt-2 text-mono text-xs">${found.map(f=>`${f.ip}:${f.port}`).join(' · ')}</div>` : ''}
+    </div>`;
+}
+
+async function pingDevice(id) {
+  const r = await PUT(`/devices/${id}/ping`);
+  if (r?.ok) { toast('Ping berhasil! Status diperbarui.', 'success'); renderDevices(); }
+  else toast('Ping gagal.', 'error');
+}
+
+async function deleteDevice(id, name) {
+  if (!confirm(`Apakah Anda yakin ingin menghapus perangkat "${name}"?`)) {
+    return;
+  }
+  const r = await DEL(`/devices/${id}`);
+  if (r?.ok) {
+    toast('Perangkat berhasil dihapus!', 'success');
+    renderDevices(); 
+  } else {
+    toast(r?.data?.detail || 'Gagal menghapus perangkat.', 'error');
+  }
+}
+
+function showRegisterDevice() {
+  openModal(
+    'Daftarkan Perangkat IoT',
+    'Masukkan detail perangkat yang akan dihubungkan',
+    `<div class="form-group"><label class="form-label">Nama Perangkat</label>
+     <input id="dev-name" class="form-input" placeholder="Sensor Kompos #1" value="Sensor Kompos #1"/></div>
+     <div class="form-group"><label class="form-label">Alamat IP</label>
+     <input id="dev-ip" class="form-input" placeholder="192.168.1.50" value="192.168.1.50"/></div>
+     <div class="form-group"><label class="form-label">Lokasi</label>
+     <input id="dev-loc" class="form-input" placeholder="Bak Kompos A"/></div>`,
+    `<button class="btn btn-primary" onclick="registerDevice()">Daftarkan</button>`
+  );
+}
+
+async function registerDevice() {
+  const name = document.getElementById('dev-name').value.trim();
+  const ip   = document.getElementById('dev-ip').value.trim();
+  const loc  = document.getElementById('dev-loc').value.trim();
+  
+  if (!name) { toast('Nama perangkat wajib diisi.', 'error'); return; }
+  
+  // [PERBAIKAN] Kirim data sebagai JSON Body, bukan lewat URL
+  const payload = {
+    name: name,
+    ip_address: ip || null,
+    location: loc || null
+  };
+
+  const r = await POST(`/devices/register`, payload);
+  
+  if (r?.ok) {
+    toast('Perangkat berhasil didaftarkan!', 'success');
+    closeModal(); 
+    renderDevices();
+  } else {
+    toast(r?.data?.detail || 'Gagal mendaftarkan perangkat.', 'error');
+  }
+}
+
+async function sendSensorData() {
+  const btn = document.getElementById('send-btn');
+  const tokenSelect = document.getElementById('iot-device-token'); // Ambil element dropdown
+  
+  // Validasi jika belum punya alat
+  if (!tokenSelect || !tokenSelect.value) {
+    toast('Silakan daftarkan perangkat terlebih dahulu.', 'error');
+    return;
+  }
+
+  btn.classList.add('btn-loading'); btn.disabled = true;
+
+  // [PERBAIKAN] Tambahkan device_token ke dalam struktur JSON
+  const payload = {
+    device_token: tokenSelect.value, 
+    temperature: parseFloat(document.getElementById('iot-temp').value),
+    humidity:    parseFloat(document.getElementById('iot-hum').value),
+    gas:         parseFloat(document.getElementById('iot-gas').value),
+  };
+
+  if (isNaN(payload.temperature) || isNaN(payload.humidity) || isNaN(payload.gas)) {
+    toast('Semua nilai sensor harus diisi.', 'error');
+    btn.classList.remove('btn-loading'); btn.disabled = false; 
+    return;
+  }
+
+  // Asumsi endpoint Anda adalah /api/iot/data
+  const r = await POST('/iot/data', payload); 
+  
+  btn.classList.remove('btn-loading'); btn.disabled = false;
+
+  const el = document.getElementById('iot-result');
+  if (r?.ok) {
+    el.className = 'alert alert-success';
+    el.innerHTML = `✓ Data tersimpan! ID Sensor: <b>${r.data.sensor_data.id}</b>`;
+    el.classList.remove('hidden');
+    toast('Data sensor terkirim!', 'success');
+  } else {
+    el.className = 'alert alert-error';
+    el.textContent = r?.data?.detail || 'Gagal mengirim data.';
+    el.classList.remove('hidden');
+    toast('Validasi gagal: ' + (r?.data?.detail || 'error'), 'error');
+  }
+}

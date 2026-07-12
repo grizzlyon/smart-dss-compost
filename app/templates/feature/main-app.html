@@ -1,0 +1,91 @@
+<div id="main-app" class="hidden">
+    <div id="app">
+
+      <nav class="sidebar" id="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">
+          ✕
+        </button>
+        <div class="sidebar-logo">
+          <div class="logo-mark">
+            <div class="logo-dot"></div>
+            Smart DSS Compost
+          </div>
+          <span style="font-size:9px;color:var(--text3);letter-spacing:2px;font-family:'DM Mono',monospace;display:block;margin-top:4px">DSS KOMPOS IOT v3.0</span>
+        </div>
+
+        <div class="sidebar-nav">
+          <div class="nav-section">Utama</div>
+          <div class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+            <span class="icon">⬡</span> Dashboard
+          </div>
+
+          <div class="nav-section">IoT</div>
+          <div class="nav-item" onclick="navigate('devices')" id="nav-devices">
+            <span class="icon">📟</span> Perangkat IoT
+          </div>
+          <div class="nav-item" onclick="navigate('monitoring')" id="nav-monitoring">
+            <span class="icon">📊</span> Monitoring
+            <span class="badge live-badge hidden" id="live-badge">LIVE</span>
+          </div>
+
+          <div class="nav-section">Analisis</div>
+          <div class="nav-item" onclick="navigate('ml')" id="nav-ml">
+            <span class="icon">🤖</span> ML & Klasifikasi
+          </div>
+          <div class="nav-item" onclick="navigate('dss')" id="nav-dss">
+            <span class="icon">🌿</span> Rekomendasi DSS
+          </div>
+
+          <div class="nav-section">Laporan</div>
+          <div class="nav-item" onclick="navigate('reports')" id="nav-reports">
+            <span class="icon">📄</span> Ekspor Laporan
+          </div>
+
+          <div id="nav-admin-section" class="hidden">
+              <div class="nav-section">Admin</div>
+              
+              <!-- Menu Manajemen User -->
+              <div class="nav-item" onclick="navigate('admin')" id="nav-admin">
+                  <span class="icon">⚙</span> Manajemen User
+              </div>
+              
+              <!-- Menu Kotak Masuk (Baru) -->
+              <div class="nav-item" onclick="navigate('feedback')" id="nav-feedback">
+                  <span class="icon">📥</span> Kotak Masuk
+              </div>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-pill" onclick="navigate('profile')">
+            <div class="user-avatar" id="sidebar-avatar">U</div>
+            <div class="user-info">
+              <div class="user-name" id="sidebar-name">Loading...</div>
+              <div class="user-role" id="sidebar-role">user</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm w-full mt-2" onclick="handleLogout()" style="justify-content:flex-start;padding-left:12px">
+            ↩ Keluar
+          </button>
+        </div>
+      </nav>
+
+      <div class="main">
+        <div class="topbar">
+          <div class="flex items-center gap-3">
+            <button class="btn btn-ghost btn-sm" id="menu-toggle" onclick="toggleSidebar()" style="display:none">☰</button>
+            <div class="topbar-title" id="topbar-title">Dashboard</div>
+          </div>
+          <div class="topbar-actions">
+            <div id="live-indicator" class="hidden flex items-center gap-2 text-sm text-mono" style="color:var(--accent)">
+              <span class="live-dot"></span>LIVE
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="refreshCurrentPage()">↺ Refresh</button>
+          </div>
+        </div>
+
+        <div class="content" id="content">
+          </div>
+      </div>
+    </div>
+</div>
