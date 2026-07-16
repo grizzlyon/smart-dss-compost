@@ -18,8 +18,8 @@ jobs:
       - name: Install Hugging Face CLI
         run: pip install -U "huggingface_hub[cli]"
         
-      - name: Upload to Hugging Face
+      - name: Upload to Hugging Face menggunakan hf (Perintah Baru)
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli upload Frizt27/dsscompost . --repo-type=space --exclude=".git/*" --exclude=".github/*"
+          hf upload Frizt27/dsscompost . . --repo-type space --exclude=".git/*" --exclude=".github/*"
